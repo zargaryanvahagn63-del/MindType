@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnFinish;
 
     List<Question> questions;
-    int total = 20;
+    int total;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         btnFinish = findViewById(R.id.btnFinish);
 
         questions = getQuestions();
+        total = questions.size();
 
         adapter = new QuestionAdapter(questions, (answered) -> {
             tvProgress.setText(answered + "/" + total);
@@ -51,37 +52,64 @@ public class MainActivity extends AppCompatActivity {
             TestResult r = calculate(questions, adapter.answers);
 
             Intent i = new Intent(this, ResultActivity.class);
-            i.putExtra("E", normalize(r.scores[0], 4));
+
+            i.putExtra("E", normalize(r.scores[0], 8));
+            i.putExtra("A", normalize(r.scores[1], 8));
+            i.putExtra("C", normalize(r.scores[2], 8));
+            i.putExtra("N", normalize(r.scores[3], 8));
+            i.putExtra("O", normalize(r.scores[4], 8));
+
             startActivity(i);
         });
     }
 
     private List<Question> getQuestions() {
         return Arrays.asList(
+                new Question("Мне нравится общаться с людьми", 0, false),
+                new Question("Я люблю шумные места", 0, false),
+                new Question("Я легко начинаю разговор", 0, false),
+                new Question("Мне нравится слушать", 0, false),
                 new Question("Мне нравится быть в центре внимания", 0, false),
-                new Question("Я быстро устаю от общения", 0, true),
-                new Question("Я легко знакомлюсь", 0, false),
-                new Question("Я предпочитаю одиночество", 0, true),
+                new Question("Я устаю от общения", 0, true),
+                new Question("Я предпочитаю быть один", 0, true),
+                new Question("Я избегаю больших компаний", 0, true),
+                new Question("Мне трудно заводить разговор", 0, true),
 
-                new Question("Я стараюсь помогать людям", 1, false),
-                new Question("Мне сложно сопереживать", 1, true),
+                new Question("Я стараюсь помогать другим", 1, false),
+                new Question("Я добр к людям", 1, false),
+                new Question("Я умею слушать", 1, false),
                 new Question("Я доверяю людям", 1, false),
                 new Question("Я часто спорю", 1, true),
+                new Question("Мне трудно понять других", 1, true),
+                new Question("Я редко помогаю", 1, true),
+                new Question("Я не доверяю людям", 1, true),
 
-                new Question("Я довожу дела до конца", 2, false),
+                new Question("Я довожу дела до конца", 2,false),
+                new Question("Я люблю порядок", 2, false),
+                new Question("Я планирую дела", 2, false),
+                new Question("Я ответственный", 2, false),
                 new Question("Я часто откладываю", 2, true),
-                new Question("Я организованный", 2, false),
-                new Question("Я забываю о задачах", 2, true),
+                new Question("Я забываю о делах", 2, true),
+                new Question("У меня беспорядок", 2, true),
+                new Question("Я делаю всё в последний момент", 2, true),
 
                 new Question("Я часто переживаю", 3, false),
+                new Question("Я легко злюсь", 3, false),
+                new Question("Я быстро расстраиваюсь", 3, false),
+                new Question("Я часто думаю о плохом", 3, false),
                 new Question("Я спокоен в стрессе", 3, true),
-                new Question("Я легко раздражаюсь", 3, false),
+                new Question("Меня трудно вывести из себя", 3, true),
                 new Question("Я редко тревожусь", 3, true),
+                new Question("Я быстро успокаиваюсь", 3, true),
 
                 new Question("Мне нравятся новые идеи", 4, false),
-                new Question("Я не люблю перемены", 4, true),
+                new Question("Я люблю пробовать новое", 4, false),
+                new Question("Мне интересно учиться", 4, false),
                 new Question("Я люблю творчество", 4, false),
-                new Question("Я избегаю нового опыта", 4, true)
+                new Question("Я не люблю перемены", 4, true),
+                new Question("Я избегаю нового", 4, true),
+                new Question("Мне не интересно учиться", 4, true),
+                new Question("Я не люблю творчество", 4, true)
         );
     }
 
