@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="24dp">
 
+    <!-- 1. Тип -->
     <TextView
         android:id="@+id/tvType"
         android:layout_width="wrap_content"
@@ -13,14 +15,7 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
-    <ProgressBar
-        android:id="@+id/pbE"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="100"
-        android:layout_marginTop="16dp" />
-
+    <!-- 3. Описание -->
     <TextView
         android:id="@+id/tvDesc"
         android:layout_width="match_parent"
@@ -28,11 +23,41 @@
         android:text="Анализ..."
         android:layout_marginTop="16dp" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/containerResults"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </ScrollView>
+
     <Button
-        android:id="@+id/btnRetry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Пройти заново"
-        android:layout_marginTop="24dp" />
+        android:background="@drawable/bg_button"
+        android:id="@+id/btnCancel"
+        android:text="К выбору теста" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_button"
+        android:id="@+id/btnRetry"
+        android:text="Пройти Заново"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="50dp"/>
 
 </LinearLayout>
+
+    <!-- 2. Progress -->
+    <!--    <ProgressBar-->
+    <!--        android:id="@+id/pbE"-->
+    <!--        style="?android:attr/progressBarStyleHorizontal"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:max="100"-->
+    <!--        android:layout_marginTop="16dp" />-->

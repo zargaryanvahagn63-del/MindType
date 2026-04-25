@@ -6,56 +6,69 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Arrays;
 import java.util.List;
 
-public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.VH> {
+public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.Holder> {
 
-    public int[] answers;
-    private final List<Question> list;
-    private final OnAnswerListener listener;
+    List<Question> list;
+    int[] answers;
+    OnAnswer listener;
 
-    public interface OnAnswerListener {
-        void onChanged(int answered);
+    public interface OnAnswer {
+        void onAnswered(int count);
     }
 
-    public QuestionAdapter(List<Question> list, OnAnswerListener l) {
+    public QuestionAdapter(List<Question> list, OnAnswer listener) {
         this.list = list;
-        this.listener = l;
+        this.listener = listener;
         answers = new int[list.size()];
-    }
-
-    @NonNull
-    @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_question, parent, false);
-        return new VH(view);
+        Arrays.fill(answers, -1);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH h, int i) {
-        Question q = list.get(i);
-        h.text.setText(q.text);
+    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_question, parent, false);
+        return new Holder(v);
+    }
 
-        // Reset listener to avoid triggering it when binding
-        h.seek.setOnSeekBarChangeListener(null);
-        // Restore progress if already set
-        h.seek.setProgress(answers[i] > 0 ? answers[i] - 1 : 0);
+    @Override
+    public void onBindViewHolder(Holder h, int pos) {
 
-        h.seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        Question q = list.get(pos);
+
+        h.tvQuestion.setText(q.text);
+
+        // ВАЖНО: убрать listener
+        h.seekBar.setOnSeekBarChangeListener(null);
+
+        h.seekBar.setMax(4);
+
+        // всегда ставим текущее значение
+        if (answers[pos] == -1) {
+            answers[pos] = 2; // центр
+        }
+        h.seekBar.setProgress(answers[pos]);
+
+        h.tvEmoji.setText(getEmoji(answers[pos]));
+
+        h.seekBar.setProgress(answers[pos]);
+
+        h.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar s, int v, boolean b) {
-                if (b) { // only if changed by user
-                    answers[h.getAdapterPosition()] = v + 1;
-                    listener.onChanged(countAnswered());
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int pos = h.getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
+                    answers[pos] = progress;
+                    notifyAnsweredCount();
                 }
             }
-            @Override
-            public void onStartTrackingTouch(SeekBar s) {}
-            @Override
-            public void onStopTrackingTouch(SeekBar s) {}
+
+            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
 
@@ -64,20 +77,36 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.VH> {
         return list.size();
     }
 
-    private int countAnswered() {
-        int c = 0;
-        for (int a : answers) if (a != 0) c++;
-        return c;
+
+    private void notifyAnsweredCount() {
+        int count = 0;
+        for (int a : answers) {
+            if (a != -1) count++;
+        }
+        listener.onAnswered(count);
     }
 
-    static class VH extends RecyclerView.ViewHolder {
-        TextView text;
-        SeekBar seek;
+    private String getEmoji(int p) {
+        String[] emojis = {"😡","🙁","😐","😊","😁"};
+        if (p < 0 || p >= emojis.length) return "🙂";
+        return emojis[p];
+    }
 
-        VH(View v) {
+    public void clearAnswers() {
+        Arrays.fill(answers, 3);
+        notifyDataSetChanged();
+    }
+
+    static class Holder extends RecyclerView.ViewHolder {
+
+        TextView tvQuestion, tvEmoji;
+        SeekBar seekBar;
+
+        public Holder(View v) {
             super(v);
-            text = v.findViewById(R.id.qText);
-            seek = v.findViewById(R.id.qSeek);
+            tvQuestion = v.findViewById(R.id.tvQuestion);
+            tvEmoji = v.findViewById(R.id.tvEmoji);
+            seekBar = v.findViewById(R.id.seekBar);
         }
     }
 }
