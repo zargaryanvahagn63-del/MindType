@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Arrays;
@@ -13,56 +14,48 @@ import java.util.List;
 
 public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.Holder> {
 
-    List<Question> list;
-    int[] answers;
-    OnAnswer listener;
+    private List<Question> questions;
+    public int[] answers;
+    private OnAnswer listener;
 
     public interface OnAnswer {
         void onAnswered(int count);
     }
 
-    public QuestionAdapter(List<Question> list, OnAnswer listener) {
-        this.list = list;
+    public QuestionAdapter(List<Question> questions, OnAnswer listener) {
+        this.questions = questions;
         this.listener = listener;
-        answers = new int[list.size()];
-        Arrays.fill(answers, -1);
+        answers = new int[questions.size()];
+        Arrays.fill(answers, -1); // -1 значит "еще не трогал"
+    }
+
+    @NonNull
+    @Override
+    public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_question, parent, false);
+        return new Holder(view);
     }
 
     @Override
-    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_question, parent, false);
-        return new Holder(v);
-    }
+    public void onBindViewHolder(@NonNull Holder holder, int position) {
+        Question q = questions.get(position);
+        holder.tvQuestion.setText(q.getText());
 
-    @Override
-    public void onBindViewHolder(Holder h, int pos) {
+        // Сбрасываем слушатель
+        holder.seekBar.setOnSeekBarChangeListener(null);
 
-        Question q = list.get(pos);
+        int currentProgress = answers[position];
+        holder.seekBar.setProgress(currentProgress == -1 ? 2 : currentProgress);
 
-        h.tvQuestion.setText(q.text);
+        // Сразу ставим эмодзи
+        holder.tvEmoji.setText(getEmoji(holder.seekBar.getProgress()));
 
-        // ВАЖНО: убрать listener
-        h.seekBar.setOnSeekBarChangeListener(null);
-
-        h.seekBar.setMax(4);
-
-        // всегда ставим текущее значение
-        if (answers[pos] == -1) {
-            answers[pos] = 2; // центр
-        }
-        h.seekBar.setProgress(answers[pos]);
-
-        h.tvEmoji.setText(getEmoji(answers[pos]));
-
-        h.seekBar.setProgress(answers[pos]);
-
-        h.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        holder.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int pos = h.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    answers[pos] = progress;
+                if (fromUser) {
+                    answers[position] = progress;
+                    holder.tvEmoji.setText(getEmoji(progress));
                     notifyAnsweredCount();
                 }
             }
@@ -74,31 +67,41 @@ public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.Holder
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return questions.size();
     }
-
 
     private void notifyAnsweredCount() {
         int count = 0;
         for (int a : answers) {
             if (a != -1) count++;
         }
-        listener.onAnswered(count);
+        if (listener != null) {
+            listener.onAnswered(count);
+        }
     }
 
-    private String getEmoji(int p) {
-        String[] emojis = {"😡","🙁","😐","😊","😁"};
-        if (p < 0 || p >= emojis.length) return "🙂";
-        return emojis[p];
+    private String getEmoji(int progress) {
+        String[] emojis = {"😡", "🙁", "😐", "😊", "😁"};
+        if (progress < 0) progress = 0;
+        if (progress > 4) progress = 4;
+        return emojis[progress];
     }
 
     public void clearAnswers() {
-        Arrays.fill(answers, 3);
+        Arrays.fill(answers, -1);
         notifyDataSetChanged();
+        notifyAnsweredCount(); // Обнуляем счетчик в UI
+    }
+
+    public int getScoreForQuestion(int index) {
+        if (index >= 0 && index < answers.length) {
+            // Если не отвечали, возвращаем нейтральный ответ (2)
+            return answers[index] == -1 ? 2 : answers[index];
+        }
+        return 2;
     }
 
     static class Holder extends RecyclerView.ViewHolder {
-
         TextView tvQuestion, tvEmoji;
         SeekBar seekBar;
 

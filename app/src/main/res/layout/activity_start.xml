@@ -113,7 +113,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:text="Смешарики"
+                    android:text="EQ"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#000"
@@ -121,7 +121,7 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:text="Кто ты?"
+                    android:text="Определяет вашу способность распознавать свои и чужие эмоции, а также управлять ими для достижения целей"
                     android:textSize="14sp"
                     android:textColor="#555"
                     android:layout_marginTop="4dp"
@@ -129,7 +129,7 @@
                     android:layout_height="wrap_content"/>
 
                 <Button
-                    android:id="@+id/btnFun"
+                    android:id="@+id/btnEQ"
                     android:text="Начать"
                     android:layout_marginTop="12dp"
                     android:layout_width="match_parent"

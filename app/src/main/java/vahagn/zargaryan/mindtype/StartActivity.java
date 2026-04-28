@@ -18,7 +18,7 @@ public class StartActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBigFive).setOnClickListener(v -> open("BIG5"));
         findViewById(R.id.btnMBTI).setOnClickListener(v -> open("MBTI"));
-        findViewById(R.id.btnFun).setOnClickListener(v -> open("FUN"));
+        findViewById(R.id.btnEQ).setOnClickListener(v -> open("EQ"));
         findViewById(R.id.btnDarkTriad).setOnClickListener(v -> open("DARK3"));
     }
 

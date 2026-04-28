@@ -30,7 +30,7 @@
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:max="5"
-            android:progress="3"/>
+            android:max="4"
+            android:progress="2"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

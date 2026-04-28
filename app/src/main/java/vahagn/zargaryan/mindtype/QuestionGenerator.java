@@ -1,6 +1,5 @@
 package vahagn.zargaryan.mindtype;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -13,9 +12,7 @@ public class QuestionGenerator {
     private static final Random r = new Random();
 
     public enum Level {
-        EASY,
-        NORMAL,
-        HARD
+        EASY, NORMAL, HARD
     }
 
     // --- словари ---
@@ -33,10 +30,6 @@ public class QuestionGenerator {
 
     static String[] plans = {
             "планировать", "заранее решать", "действовать спонтанно", "импровизировать"
-    };
-
-    static String[] neg = {
-            "не люблю", "избегаю", "не предпочитаю"
     };
 
     // --- шаблоны ---
@@ -65,9 +58,76 @@ public class QuestionGenerator {
             "Мне комфортнее {plan}"
     };
 
-    // --- главный метод ---
-    public static List<Question> generateMBTI(int countPerTrait, Level level) {
+    // --- Словари для EQ ---
+    static String[] eqEmotions = {
+            "эмоции", "чувства", "переживания", "настроение"
+    };
+    static String[] eqPeople = {
+            "окружающих", "других людей", "близких", "собеседников"
+    };
 
+    // --- Шаблоны EQ ---
+    static String[] EQ_SELF = {
+            "Я всегда понимаю свои {eq_emotion}",
+            "Мне легко контролировать свои {eq_emotion}"
+    };
+    static String[] EQ_SOCIAL = {
+            "Я умею находить общий язык с {eqPeople}",
+            "Мне легко общаться с {eqPeople}"
+    };
+    static String[] EQ_EMPATHY = {
+            "Я хорошо чувствую {eq_emotion} {eqPeople}",
+            "Я сопереживаю, когда вижу чужие {eq_emotion}"
+    };
+
+    // --- Словари для Темной Триады ---
+    static String[] dtPower = {
+            "власть", "контроль", "превосходство", "влияние"
+    };
+    static String[] dtManipulate = {
+            "манипулировать", "управлять", "использовать в своих целях"
+    };
+
+    // --- Шаблоны Dark Triad ---
+    static String[] DT_NARC = {
+            "Я заслуживаю {dt_power} больше, чем другие",
+            "Я чувствую свое {dt_power} над остальными"
+    };
+    static String[] DT_MACH = {
+            "Я готов {dtManipulate} людьми ради успеха",
+            "Умение {dtManipulate} другими — полезный навык"
+    };
+    static String[] DT_PSY = {
+            "Меня не волнуют чужие {eq_emotion}", // переиспользуем словарь из EQ!
+            "Я редко жалею о своих поступках" // статический, для разнообразия
+    };
+
+    public static List<Question> generateEQ(int countPerTrait, Level level) {
+        List<Question> list = new ArrayList<>();
+        Set<String> used = new HashSet<>();
+
+        // Тут можно тоже прикрутить Level, если сделаешь массивы EASY/HARD для EQ
+        list.addAll(genBlock(EQ_SELF, 0, countPerTrait, used));
+        list.addAll(genBlock(EQ_SOCIAL, 1, countPerTrait, used));
+        list.addAll(genBlock(EQ_EMPATHY, 2, countPerTrait, used));
+
+        Collections.shuffle(list);
+        return list;
+    }
+
+    public static List<Question> generateDarkTriad(int countPerTrait, Level level) {
+        List<Question> list = new ArrayList<>();
+        Set<String> used = new HashSet<>();
+
+        list.addAll(genBlock(DT_NARC, 0, countPerTrait, used));
+        list.addAll(genBlock(DT_MACH, 1, countPerTrait, used));
+        list.addAll(genBlock(DT_PSY, 2, countPerTrait, used));
+
+        Collections.shuffle(list);
+        return list;
+    }
+
+    public static List<Question> generateMBTI(int countPerTrait, Level level) {
         List<Question> list = new ArrayList<>();
         Set<String> used = new HashSet<>();
 
@@ -80,52 +140,54 @@ public class QuestionGenerator {
         return list;
     }
 
-    // --- генерация блока ---
     private static List<Question> genBlock(String[] base, int trait, int count, Set<String> used) {
-
         List<Question> out = new ArrayList<>();
 
         while (out.size() < count) {
-
-            String text = mutate(base[r.nextInt(base.length)]);
+            String rawText = base[r.nextInt(base.length)];
+            String text = fillTemplates(rawText);
 
             if (used.contains(text)) continue;
 
+            // false = прямой вопрос, true = обратный (инверсия)
+            boolean isReverse = r.nextBoolean();
+
+            if (isReverse) {
+                text = applyNegative(text);
+            }
+
+            // Проверяем еще раз после инверсии, чтобы не было дублей
+            if (used.contains(text)) continue;
+
             used.add(text);
-
-            boolean reverse = r.nextBoolean();
-
-            out.add(new Question(text, trait, reverse));
+            out.add(new Question(text, trait, isReverse));
         }
 
         return out;
     }
 
-    // --- мутация ---
-    private static String mutate(String s) {
-
-        String result = s
-                .replace("{action}", pick(actions))
+    private static String fillTemplates(String s) {
+        return s.replace("{action}", pick(actions))
                 .replace("{idea}", pick(ideas))
                 .replace("{logic}", pick(logic))
-                .replace("{plan}", pick(plans));
-
-        if (r.nextInt(100) < 30) {
-            result = invert(result);
-        }
-
-        return result;
+                .replace("{plan}", pick(plans))
+                // Добавляем словари для EQ и Темной Триады!
+                .replace("{eq_emotion}", pick(eqEmotions))
+                .replace("{eqPeople}", pick(eqPeople))
+                .replace("{dt_power}", pick(dtPower))
+                .replace("{dtManipulate}", pick(dtManipulate));
     }
 
-    // --- инверсия ---
-    private static String invert(String s) {
-        return s
-                .replace("нравится", pick(neg))
-                .replace("люблю", pick(neg))
-                .replace("предпочитаю", pick(neg));
+    private static String applyNegative(String s) {
+        return s.replace("Мне нравится", "Я скорее избегаю")
+                .replace("Я люблю", "Мне не очень нравится")
+                .replace("Я предпочитаю", "Я не особо люблю")
+                .replace("Мне интереснее", "Мне скучно изучать")
+                .replace("Я выбираю", "Я редко выбираю")
+                .replace("Я получаю энергию от", "Меня утомляет")
+                .replace("Я склонен искать", "Я стараюсь избегать");
     }
 
-    // --- выбор уровня ---
     private static String[] pickSet(Level level, String[] easy, String[] hard) {
         if (level == Level.EASY) return easy;
         if (level == Level.HARD) return hard;
