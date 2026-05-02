@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MindType">
         <activity
+            android:name=".TutorialActivity"
+            android:exported="false" />
+        <activity
             android:name=".StartActivity"
             android:exported="false" />
         <activity

@@ -22,6 +22,7 @@
 
         <!-- BIG FIVE -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardBig5"
             android:layout_marginBottom="12dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="6dp"
@@ -61,6 +62,7 @@
 
         <!-- MBTI -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardMBTI"
             android:layout_marginBottom="12dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="6dp"
@@ -100,6 +102,7 @@
 
         <!-- FUN -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardEQ"
             android:layout_marginBottom="12dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="6dp"
@@ -138,6 +141,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardDark3"
             android:layout_marginBottom="12dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="6dp"

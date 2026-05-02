@@ -2,7 +2,9 @@ package vahagn.zargaryan.mindtype;
 
 import android.content.Intent;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DarkTriadAnalyzer extends BaseAnalyzer {
     @Override
@@ -17,10 +19,10 @@ public class DarkTriadAnalyzer extends BaseAnalyzer {
         sb.append(getNarcText(narc)).append("\n\n");
 
         sb.append("Макиавеллизм: ").append(mach).append("% (").append(getLevel(mach)).append(")\n");
-        sb.append(getMachText(mach)).append("\n\n");
+        sb.append(getMachText(mach)).append("\n");
 
         sb.append("Психопатия: ").append(psy).append("% (").append(getLevel(psy)).append(")\n");
-        sb.append(getPsyText(psy)).append("\n\n");
+        sb.append(getPsyText(psy)).append("\n");
 
         // Общий вывод
         int avg = (narc + mach + psy) / 3;
@@ -35,6 +37,19 @@ public class DarkTriadAnalyzer extends BaseAnalyzer {
     @Override
     public List<Question> getQuestions() {
         return QuestionGenerator.generateDarkTriad(5, QuestionGenerator.Level.NORMAL);
+    }
+
+    @Override
+    public Map<String, Integer> getChartData(Intent data) {
+        // Используем LinkedHashMap, чтобы сохранить порядок осей на графике
+        Map<String, Integer> map = new LinkedHashMap<>();
+
+        // Ключ — это подпись на графике, значение — процент, который мы положили в packIntent
+        map.put("Нарциссизм", data.getIntExtra("NARCISSISM", 0));
+        map.put("Макиавеллизм", data.getIntExtra("MACHIAVELLIANISM", 0));
+        map.put("Психопатия", data.getIntExtra("PSYCHOPATHY", 0));
+
+        return map;
     }
 
     @Override

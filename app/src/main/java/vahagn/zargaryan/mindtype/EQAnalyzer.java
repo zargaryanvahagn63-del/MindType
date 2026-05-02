@@ -2,7 +2,9 @@ package vahagn.zargaryan.mindtype;
 
 import android.content.Intent;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EQAnalyzer extends BaseAnalyzer {
 
@@ -37,6 +39,17 @@ public class EQAnalyzer extends BaseAnalyzer {
     public List<Question> getQuestions() {
         // Дергаем 5 вопросов нормального уровня
         return QuestionGenerator.generateEQ(5, QuestionGenerator.Level.NORMAL);
+    }
+
+    @Override
+    public Map<String, Integer> getChartData(Intent data) {
+        Map<String, Integer> chartData = new LinkedHashMap<>();
+
+        chartData.put("Самопознание", data.getIntExtra("SELF_AWARE", 0));
+        chartData.put("Эмпатия", data.getIntExtra("EMPATHY", 0));
+        chartData.put("Социальность", data.getIntExtra("SOCIAL_SKILLS", 0));
+
+        return chartData;
     }
 
     @Override

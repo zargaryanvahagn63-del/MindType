@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="#121212"> <!-- Темный фон -->
+
+    <TextView
+        android:id="@+id/tvTutTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Познай себя"
+        android:textSize="28sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvTutDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MindType создан для того, чтобы помочь тебе заглянуть внутрь себя. Отвечай честно, здесь нет правильных или неправильных ответов."
+        android:textSize="16sp"
+        android:textColor="#B3B3B3"
+        android:textAlignment="center"
+        android:lineSpacingExtra="6sp"
+        android:layout_marginBottom="48dp"/>
+
+    <TextView
+        android:id="@+id/tvTutInstruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Сдвигай ползунок к тому ответу, который тебе ближе:"
+        android:textSize="14sp"
+        android:textColor="#888888"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvSeekBarInstruction"
+        android:text="Нейтрально"
+        android:textSize="14sp"
+        android:textColor="#888888"
+        android:layout_marginBottom="16dp"/>
+
+    <LinearLayout
+        android:id="@+id/sliderContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="48dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="😡"
+            android:textSize="24sp"/>
+
+        <SeekBar
+            android:id="@+id/demoSeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="4"
+            android:progress="2"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="😁"
+            android:textSize="24sp"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnTutStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Начать"
+        android:backgroundTint="#333333"
+        android:textColor="#FFFFFF"
+        android:padding="16dp"/>
+
+</LinearLayout>

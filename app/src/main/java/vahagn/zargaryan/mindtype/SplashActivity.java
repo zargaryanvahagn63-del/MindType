@@ -1,6 +1,7 @@
 package vahagn.zargaryan.mindtype;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ImageView;
@@ -50,8 +51,21 @@ public class SplashActivity extends AppCompatActivity {
 
 // переход
         new Handler().postDelayed(() -> {
-            startActivity(new Intent(this, StartActivity.class));
+            // Обращаемся к настройкам
+            SharedPreferences prefs = getSharedPreferences("MindTypePrefs", MODE_PRIVATE);
+            boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
+
+            Intent intent;
+            if (isFirstRun) {
+                // Если первый запуск — ведем на обучение
+                intent = new Intent(SplashActivity.this, TutorialActivity.class);
+            } else {
+                // Если уже видели — в главное меню
+                intent = new Intent(SplashActivity.this, StartActivity.class);
+            }
+
+            startActivity(intent);
             finish();
-        }, 2000);
+        }, 2500); // Можно чуть увеличить задержку до 2.5 сек, чтобы анимация текста успела «подышать»
     }
 }

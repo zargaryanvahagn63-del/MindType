@@ -1,8 +1,12 @@
 package vahagn.zargaryan.mindtype;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         if (typeStr == null) { finish(); return; }
         type = TestType.valueOf(typeStr);
 
-        // Инициализируем нужный анализатор один раз
+        // Инициализируем нужный анализатор
         initAnalyzer();
 
         // Получаем вопросы у анализатора
@@ -50,7 +54,13 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new QuestionAdapter(questions, this::updateProgress);
         recycler.setLayoutManager(new LinearLayoutManager(this));
+
+        Context context = recycler.getContext();
+        LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+
         recycler.setAdapter(adapter);
+        recycler.setLayoutAnimation(controller);
+        recycler.scheduleLayoutAnimation();
 
         updateProgress(0);
         btnFinish.setOnClickListener(v -> finishTest());
@@ -76,17 +86,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void finishTest() {
-        Intent intent = new Intent(this, ResultActivity.class);
-        intent.putExtra("type", type.name());
+        // 1. Прячем кнопку сразу, чтобы не нажали дважды
+        btnFinish.setEnabled(false);
 
-        // Считаем сырые баллы
-        int[] rawScores = calculateRaw();
+        // 2. Анимируем уход элементов (Recycler и Progress)
+        recycler.animate().alpha(0f).translationY(-50f).setDuration(400).start();
+        tvProgress.animate().alpha(0f).setDuration(400).start();
+        progress.animate().alpha(0f).setDuration(400).start();
 
-        // Просим анализатор упаковать их с нужной нормализацией
-        analyzer.packIntent(intent, rawScores);
+        // 3. Небольшая задержка "для солидности" (будто идет расчет)
+        new Handler().postDelayed(() -> {
+            Intent intent = new Intent(this, ResultActivity.class);
+            intent.putExtra("type", type.name());
 
-        startActivity(intent);
-        finish();
+            int[] rawScores = calculateRaw();
+            analyzer.packIntent(intent, rawScores);
+
+            startActivity(intent);
+
+            // Кастомный переход "растворение и масштаб"
+            // (вместо стандартного системного сдвига)
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+        }, 600);
     }
 
     private int[] calculateRaw() {

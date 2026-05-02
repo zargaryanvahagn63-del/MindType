@@ -3,7 +3,9 @@ package vahagn.zargaryan.mindtype;
 import android.content.Intent;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PersonalityAnalyzer extends BaseAnalyzer {
     @Override
@@ -76,6 +78,20 @@ public class PersonalityAnalyzer extends BaseAnalyzer {
                 new Question("Я предпочитаю привычные вещи", 4, true),
                 new Question("Я избегаю сложных идей", 4, true)
         );
+    }
+
+    @Override
+    public Map<String, Integer> getChartData(Intent data) {
+        Map<String, Integer> chartData = new LinkedHashMap<>();
+
+        // Достаем данные по тем же ключам, которые использовали в packIntent
+        chartData.put("Экстраверсия", data.getIntExtra("E", 0));
+        chartData.put("Дружелюбие", data.getIntExtra("A", 0));
+        chartData.put("Сознательность", data.getIntExtra("C", 0));
+        chartData.put("Нейротизм", data.getIntExtra("N", 0));
+        chartData.put("Открытость", data.getIntExtra("O", 0));
+
+        return chartData;
     }
 
     @Override
