@@ -82,7 +82,7 @@ public class TutorialActivity extends AppCompatActivity {
         }
 
         // Запускаем каскадную анимацию
-        long delay = 300; // Начальная задержка
+        long delay = 300;
         for (View v : viewsToAnimate) {
             v.animate()
                     .alpha(1f)
