@@ -9,10 +9,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="vahagn.zargaryan.mindtype" />
+                  <option name="mobileSdkAppId" value="1:99926532319:android:81b1d0702e300601c7896a" />
+                  <option name="projectId" value="mindtype-8baa7" />
+                  <option name="projectNumber" value="99926532319" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

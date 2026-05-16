@@ -21,7 +21,7 @@ public class TutorialActivity extends AppCompatActivity {
 
 
     private int currentStage = 0;
-    private Handler loopHandler = new Handler();
+    private final Handler loopHandler = new Handler();
     private Runnable sliderRunnable;
 
     private void startInfiniteSlider() {
@@ -125,12 +125,9 @@ public class TutorialActivity extends AppCompatActivity {
 
         // Запускаем переход после того, как последний элемент (заголовок) начнет исчезать
         tvTitle.postDelayed(() -> {
-            Intent intent = new Intent(this, StartActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
-
-            // Плавный переход между Activity (Zoom + Fade)
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-
             finish();
         }, delay + 200);
     }

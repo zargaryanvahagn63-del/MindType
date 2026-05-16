@@ -1,11 +1,10 @@
 package vahagn.zargaryan.mindtype;
 
 public class Question {
-    private String text;
-    private int trait;
-    private boolean isReverse;
+    private final String text;
+    private final int trait;
+    private final boolean isReverse;
 
-    // Конструктор
     public Question(String text, int trait, boolean isReverse) {
         this.text = text;
         this.trait = trait;

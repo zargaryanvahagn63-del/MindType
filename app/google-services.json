@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "99926532319",
+    "project_id": "mindtype-8baa7",
+    "storage_bucket": "mindtype-8baa7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99926532319:android:81b1d0702e300601c7896a",
+        "android_client_info": {
+          "package_name": "vahagn.zargaryan.mindtype"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBR-9PUIbu2e9qoyBaBwtzFDkB4dM5neS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -79,7 +79,7 @@ public class SpiderChartView extends View {
         centerX = getWidth() / 2f;
         centerY = getHeight() / 2f;
         // Оставляем место для текста по краям (отступ 15%)
-        radius = Math.min(centerX, centerY) * 0.75f;
+        radius = Math.min(centerX, centerY) * 0.65f;
 
         int count = data.size();
         float angleStep = (float) (2 * Math.PI / count);

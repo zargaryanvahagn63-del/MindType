@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:padding="32dp"
-    android:background="#121212"> <!-- Темный фон -->
+    android:background="#121212">
 
     <TextView
         android:id="@+id/tvTutTitle"

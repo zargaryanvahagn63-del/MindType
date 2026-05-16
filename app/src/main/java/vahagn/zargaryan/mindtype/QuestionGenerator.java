@@ -16,21 +16,10 @@ public class QuestionGenerator {
     }
 
     // --- словари ---
-    static String[] actions = {
-            "общаться", "разговаривать", "взаимодействовать", "проводить время"
-    };
-
-    static String[] ideas = {
-            "идеи", "новые концепции", "факты", "реальные вещи"
-    };
-
-    static String[] logic = {
-            "логику", "разум", "чувства", "эмоции"
-    };
-
-    static String[] plans = {
-            "планировать", "заранее решать", "действовать спонтанно", "импровизировать"
-    };
+    static String[] actions = { "быть в центре внимания", "общаться с незнакомцами", "активно взаимодействовать" };
+    static String[] ideas = { "конкретные факты", "реальный опыт", "практические детали" };
+    static String[] logic = { "логический анализ", "объективные доводы", "рациональные аргументы" };
+    static String[] plans = { "строгий график", "заранее составленный план", "четкую структуру" };
 
     // --- шаблоны ---
     static String[] EI_EASY = {
@@ -101,6 +90,44 @@ public class QuestionGenerator {
             "Меня не волнуют чужие {eq_emotion}", // переиспользуем словарь из EQ!
             "Я редко жалею о своих поступках" // статический, для разнообразия
     };
+
+    // Добавь эти массивы в QuestionGenerator
+    static String[] varkVisual = { "инфографику и графики", "видеоуроки с анимацией", "цветовые пометки в тексте" };
+    static String[] varkAural = { "аудиокниги и подкасты", "обсуждение темы в группе", "объяснение материала вслух" };
+    static String[] varkRead = { "чтение длинных статей", "составление подробных списков", "выписывание определений" };
+    static String[] varkKin = { "практические опыты", "сборку моделей своими руками", "обучение через движение" };
+
+    static String[] VARK_T = {
+            "Мне легче усвоить материал через {item}",
+            "Я предпочитаю использовать {item} при учебе",
+            "Для меня эффективнее всего {item}"
+    };
+
+    // Добавь этот метод в QuestionGenerator
+    public static List<Question> generateVARK(int countPerTrait) {
+        List<Question> list = new ArrayList<>();
+        Set<String> used = new HashSet<>();
+
+        list.addAll(genVarkBlock(varkVisual, 0, countPerTrait, used));
+        list.addAll(genVarkBlock(varkAural, 1, countPerTrait, used));
+        list.addAll(genVarkBlock(varkRead, 2, countPerTrait, used));
+        list.addAll(genVarkBlock(varkKin, 3, countPerTrait, used));
+
+        Collections.shuffle(list);
+        return list;
+    }
+
+    private static List<Question> genVarkBlock(String[] items, int trait, int count, Set<String> used) {
+        List<Question> out = new ArrayList<>();
+        while (out.size() < count) {
+            String raw = VARK_T[r.nextInt(VARK_T.length)];
+            String text = raw.replace("{item}", items[r.nextInt(items.length)]);
+            if (used.contains(text)) continue;
+            used.add(text);
+            out.add(new Question(text, trait, false)); // В VARK инверсия обычно не нужна
+        }
+        return out;
+    }
 
     public static List<Question> generateEQ(int countPerTrait, Level level) {
         List<Question> list = new ArrayList<>();

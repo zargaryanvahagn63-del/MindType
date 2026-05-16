@@ -51,21 +51,25 @@ public class SplashActivity extends AppCompatActivity {
 
 // переход
         new Handler().postDelayed(() -> {
-            // Обращаемся к настройкам
             SharedPreferences prefs = getSharedPreferences("MindTypePrefs", MODE_PRIVATE);
             boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
 
+            // Проверяем, залогинен ли пользователь через Firebase
+            com.google.firebase.auth.FirebaseUser currentUser =
+                    com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+
             Intent intent;
             if (isFirstRun) {
-                // Если первый запуск — ведем на обучение
                 intent = new Intent(SplashActivity.this, TutorialActivity.class);
+            } else if (currentUser == null) {
+                intent = new Intent(SplashActivity.this, LoginActivity.class);
             } else {
-                // Если уже видели — в главное меню
+                // Если пользователь уже в системе — сразу в главное меню
                 intent = new Intent(SplashActivity.this, StartActivity.class);
             }
 
             startActivity(intent);
             finish();
-        }, 2500); // Можно чуть увеличить задержку до 2.5 сек, чтобы анимация текста успела «подышать»
+        }, 2500);
     }
 }

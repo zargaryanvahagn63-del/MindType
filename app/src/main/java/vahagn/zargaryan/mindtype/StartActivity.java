@@ -1,64 +1,45 @@
 package vahagn.zargaryan.mindtype;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class StartActivity extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle b) {
-        super.onCreate(b);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        findViewById(R.id.btnBigFive).setOnClickListener(v -> open("BIG5"));
-        findViewById(R.id.btnMBTI).setOnClickListener(v -> open("MBTI"));
-        findViewById(R.id.btnEQ).setOnClickListener(v -> open("EQ"));
-        findViewById(R.id.btnDarkTriad).setOnClickListener(v -> open("DARK3"));
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
 
-
-        // Находим твои кнопки/карточки выбора тестов
-        View cardMBTI = findViewById(R.id.cardMBTI);
-        View cardEQ = findViewById(R.id.cardEQ);
-        View cardDark3 = findViewById(R.id.cardDark3);
-        View cardBig5 = findViewById(R.id.cardBig5);
-
-        View[] cards = {cardMBTI, cardEQ, cardDark3, cardBig5};
-
-        for (View v : cards) {
-            v.setAlpha(0f);
-            v.setScaleX(0.8f); // Начинаем чуть меньше
-            v.setScaleY(0.8f);
+        // Ставим HomeFragment по умолчанию при запуске
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new HomeFragment())
+                    .commit();
         }
 
-// Анимируем с "отскоком"
-        long delay = 200;
-        for (View v : cards) {
-            v.animate()
-                    .alpha(1f)
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setDuration(600)
-                    .setStartDelay(delay)
-                    // OvershootInterpolator дает тот самый приятный "пружинистый" эффект
-                    .setInterpolator(new android.view.animation.OvershootInterpolator())
-                    .start();
-            delay += 150;
-        }
-    }
+        bottomNav.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
 
-    void open(String type) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("type", type);
-        startActivity(intent);
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
+                selectedFragment = new HomeFragment();
+            } else if (itemId == R.id.nav_tasks) {
+                selectedFragment = new TasksFragment();
+            } else if (itemId == R.id.nav_profile) {
+                selectedFragment = new ProfileFragment();
+            }
 
-// Плавный переход: вход снизу + легкое затухание меню
-        overridePendingTransition(R.anim.slide_in_up, R.anim.stay_still);
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        // Можно добавить кастомные анимации перехода здесь
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+            }
+            return true;
+        });
     }
 }
