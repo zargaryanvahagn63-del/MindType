@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Базовый цвет (мы всё равно перекрашиваем его динамически через setTint в адаптере) -->
+    <solid android:color="#BB86FC" />
+
+    <!-- Скругление углов, чтобы плашка выглядела как аккуратный бейдж/тег -->
+    <corners android:radius="8dp" />
+
+</shape>

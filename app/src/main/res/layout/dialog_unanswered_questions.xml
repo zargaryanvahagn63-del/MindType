@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#121212"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Заголовок диалога -->
+    <TextView
+    android:id="@+id/dialog_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Осталось вопросов без ответа: 0"
+    android:textColor="#FFFFFF"
+    android:textSize="18sp"
+    android:textStyle="bold"
+    android:gravity="center"
+    android:layout_marginBottom="20dp" />
+
+    <!-- Кнопка 1: Показать пропущенные -->
+    <Button
+    android:id="@+id/btn_highlight_unanswered"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Показать пропущенные"
+    android:textColor="#FFFFFF"
+    android:backgroundTint="#BB86FC"
+    android:textAllCaps="false"
+    android:layout_marginBottom="12dp" />
+
+    <!-- Кнопка 2: Принудительно сдать -->
+    <Button
+    android:id="@+id/btn_force_submit"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Всё равно сдать (нейтрально)"
+    android:textColor="#BB86FC"
+    android:backgroundTint="#1F1F1F"
+    android:textAllCaps="false"
+    android:layout_marginBottom="12dp" />
+
+        <!-- Кнопка 3: Отмена -->
+    <Button
+    android:id="@+id/btn_cancel"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Продолжить заполнение"
+    android:textColor="#888888"
+    style="@style/Widget.MaterialComponents.Button.TextButton"
+    android:textAllCaps="false" />
+
+</LinearLayout>

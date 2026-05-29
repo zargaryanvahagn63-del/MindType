@@ -10,110 +10,123 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import androidx.annotation.NonNull;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Кастомный View для отображения результатов тестов в виде паутинной диаграммы (Spider Chart).
+ * Позволяет визуализировать несколько психологических характеристик на одной круговой шкале.
+ */
 public class SpiderChartView extends View {
 
     private Paint gridPaint, dataPaint, labelPaint, pointPaint;
-    private Map<String, Integer> data = new LinkedHashMap<>(); // Название -> Процент (0-100)
+    private Map<String, Integer> data = new LinkedHashMap<>(); // Карта: Название шкалы -> Процент (0-100)
 
     private float centerX, centerY, radius;
-    private float animationProgress = 0f; // Для анимации появления (0.0 -> 1.0)
+    private float animationProgress = 0f; // Переменная для анимации появления (от 0.0 до 1.0)
 
     public SpiderChartView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
+    /**
+     * Инициализация инструментов рисования (Paint).
+     */
     private void init() {
-        // Сетка (Сама паутина)
+        // Настройка кисти для сетки (паутины)
         gridPaint = new Paint();
         gridPaint.setColor(Color.parseColor("#44FFFFFF")); // Полупрозрачный белый
         gridPaint.setStyle(Paint.Style.STROKE);
         gridPaint.setStrokeWidth(3f);
         gridPaint.setAntiAlias(true);
 
-        // Область данных (Заливка)
+        // Настройка кисти для области данных (заливка фигуры)
         dataPaint = new Paint();
         dataPaint.setColor(Color.parseColor("#80BB86FC")); // Фиолетовый с прозрачностью 50%
         dataPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         dataPaint.setAntiAlias(true);
 
-        // Точки на вершинах данных
+        // Настройка кисти для точек на вершинах
         pointPaint = new Paint();
         pointPaint.setColor(Color.parseColor("#BB86FC"));
         pointPaint.setStyle(Paint.Style.FILL);
         pointPaint.setAntiAlias(true);
 
-        // Текст (Названия шкал)
+        // Настройка кисти для текста (названия шкал)
         labelPaint = new Paint();
         labelPaint.setColor(Color.WHITE);
-        labelPaint.setTextSize(36f); // Размер текста
+        labelPaint.setTextSize(36f);
         labelPaint.setTextAlign(Paint.Align.CENTER);
         labelPaint.setAntiAlias(true);
     }
 
-    // Метод для передачи данных из Activity
+    /**
+     * Устанавливает новые данные для отображения и запускает анимацию.
+     * @param newData Карта данных.
+     */
     public void setData(Map<String, Integer> newData) {
         this.data = newData;
         startAnimation();
     }
 
+    /**
+     * Запускает плавную анимацию отрисовки диаграммы.
+     */
     private void startAnimation() {
         ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-        animator.setDuration(1000); // 1 секунда
-        animator.setInterpolator(new DecelerateInterpolator()); // Замедляется к концу
+        animator.setDuration(1000); // Длительность 1 секунда
+        animator.setInterpolator(new DecelerateInterpolator());
         animator.addUpdateListener(animation -> {
             animationProgress = (float) animation.getAnimatedValue();
-            invalidate(); // Перерисовываем View на каждом кадре
+            invalidate(); // Запрос на перерисовку кадра
         });
         animator.start();
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
         if (data.isEmpty()) return;
 
+        // Определение центра и базового радиуса диаграммы
         centerX = getWidth() / 2f;
         centerY = getHeight() / 2f;
-        // Оставляем место для текста по краям (отступ 15%)
-        radius = Math.min(centerX, centerY) * 0.65f;
+        radius = Math.min(centerX, centerY) * 0.65f; // Резервируем место под подписи
 
         int count = data.size();
-        float angleStep = (float) (2 * Math.PI / count);
+        float angleStep = (float) (2 * Math.PI / count); // Шаг угла между осями
 
-        // 1. Рисуем 5 уровней "паутины"
+        // 1. Отрисовка концентрических многоугольников (сетки)
         for (int i = 1; i <= 5; i++) {
             float r = radius * (i / 5f);
             drawPolygon(canvas, r, count, angleStep, gridPaint);
         }
 
-        // 2. Рисуем оси от центра к краям и подписи
+        // 2. Отрисовка осей и подписей шкал
         int index = 0;
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
-            float angle = index * angleStep - (float) Math.PI / 2;
+            float angle = index * angleStep - (float) Math.PI / 2; // Начинаем рисовать сверху (-90 град)
             float endX = (float) (centerX + radius * Math.cos(angle));
             float endY = (float) (centerY + radius * Math.sin(angle));
 
-            // Линия оси
+            // Рисование линии от центра к краю
             canvas.drawLine(centerX, centerY, endX, endY, gridPaint);
 
-            // Подпись (чуть дальше радиуса, чтобы не накладывалась на сетку)
+            // Отрисовка текста подписи
             float labelX = (float) (centerX + (radius + 60) * Math.cos(angle));
             float labelY = (float) (centerY + (radius + 60) * Math.sin(angle));
-
-            // Центруем текст по вертикали
             canvas.drawText(entry.getKey(), labelX, labelY + 12, labelPaint);
             index++;
         }
 
-        // 3. Рисуем результат (закрашенную фигуру)
+        // 3. Отрисовка области результатов (полигона данных)
         Path path = new Path();
         index = 0;
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
-            // Значение от 0 до 100 переводим в радиус, умножаем на прогресс анимации
+            // Расчет радиуса для конкретного значения (с учетом анимации)
             float valueRadius = radius * (entry.getValue() / 100f) * animationProgress;
             float angle = index * angleStep - (float) Math.PI / 2;
 
@@ -126,19 +139,21 @@ public class SpiderChartView extends View {
                 path.lineTo(x, y);
             }
 
-            // Рисуем точку на вершине для красоты
+            // Маленькая точка на вершине для акцента
             canvas.drawCircle(x, y, 8f, pointPaint);
-
             index++;
         }
         path.close();
+        // Заливка полученной фигуры
         canvas.drawPath(path, dataPaint);
     }
 
+    /**
+     * Вспомогательный метод для рисования правильного многоугольника.
+     */
     private void drawPolygon(Canvas canvas, float r, int count, float angleStep, Paint paint) {
         Path path = new Path();
         for (int i = 0; i < count; i++) {
-            // Начинаем сверху: вычитаем 90 градусов (PI/2)
             float angle = i * angleStep - (float) Math.PI / 2;
             float x = (float) (centerX + r * Math.cos(angle));
             float y = (float) (centerY + r * Math.sin(angle));

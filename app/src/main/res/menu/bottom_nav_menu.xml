@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_home"
         android:title="Тесты" />
     <item
+        android:id="@+id/nav_leaderboard"
+        android:icon="@drawable/ic_leaderboard"
+        android:title="Лидеры"/>
+    <item
         android:id="@+id/nav_tasks"
         android:icon="@drawable/ic_tasks"
         android:title="Задания" />

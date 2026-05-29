@@ -11,26 +11,33 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Активность обучающего экрана (туториала).
+ * Знакомит пользователя с механикой тестов (использование SeekBar) и плавно переводит к регистрации.
+ */
 public class TutorialActivity extends AppCompatActivity {
 
-    TextView tvTitle, tvDesc, tvInstruction, tvSeekBarInstruction;
-    LinearLayout sliderContainer;
-    Button btnStart;
-    SeekBar demoSeekBar;
+    private TextView tvTitle, tvDesc, tvInstruction, tvSeekBarInstruction;
+    private LinearLayout sliderContainer;
+    private Button btnStart;
+    private SeekBar demoSeekBar;
 
-
-
-    private int currentStage = 0;
+    private int currentStage = 0; // Текущий шаг анимации ползунка
     private final Handler loopHandler = new Handler();
     private Runnable sliderRunnable;
 
+    /**
+     * Запускает бесконечную анимацию демонстрационного ползунка.
+     * Показывает пользователю, как меняются подписи при движении ползунка.
+     */
     private void startInfiniteSlider() {
         sliderRunnable = new Runnable() {
             @Override
             public void run() {
-                // Двигаем ползунок
+                // Устанавливаем прогресс программно (с анимацией)
                 demoSeekBar.setProgress(currentStage, true);
 
+                // Обновляем текстовую подпись под демо-ползунком
                 if(currentStage == 0) {
                     tvSeekBarInstruction.setText("Совсем нет");
                 } else if(currentStage == 1) {
@@ -43,18 +50,18 @@ public class TutorialActivity extends AppCompatActivity {
                     tvSeekBarInstruction.setText("Полностью!");
                 }
 
-                // Логика перехода к следующему этапу
+                // Переход к следующему значению
                 currentStage++;
                 if (currentStage > 4) {
-                    currentStage = 0; // Сбрасываем в начало
+                    currentStage = 0; // Цикл
                 }
 
-                // "Зацикливаем" — вызываем этот же код через 1.5 секунды
+                // Повтор через 1.5 секунды
                 loopHandler.postDelayed(this, 1500);
             }
         };
 
-        // Запускаем первый раз
+        // Первый запуск
         loopHandler.post(sliderRunnable);
     }
 
@@ -63,6 +70,7 @@ public class TutorialActivity extends AppCompatActivity {
         super.onCreate(b);
         setContentView(R.layout.activity_tutorial);
 
+        // Инициализация View
         tvTitle = findViewById(R.id.tvTutTitle);
         tvDesc = findViewById(R.id.tvTutDesc);
         tvInstruction = findViewById(R.id.tvTutInstruction);
@@ -71,17 +79,18 @@ public class TutorialActivity extends AppCompatActivity {
         demoSeekBar = findViewById(R.id.demoSeekBar);
         tvSeekBarInstruction = findViewById(R.id.tvSeekBarInstruction);
 
+        // Запрещаем пользователю двигать демо-ползунок вручную
         demoSeekBar.setOnTouchListener((v, event) -> true);
         demoSeekBar.setProgress(0);
 
-        // Подготавливаем элементы к анимации (прячем и сдвигаем вниз на 50 пикселей)
+        // Подготовка к каскадной анимации появления элементов
         View[] viewsToAnimate = {tvTitle, tvDesc, tvInstruction, tvSeekBarInstruction, sliderContainer, btnStart};
         for (View v : viewsToAnimate) {
             v.setAlpha(0f);
             v.setTranslationY(50f);
         }
 
-        // Запускаем каскадную анимацию
+        // Запуск последовательной анимации выплывания (интервал 500мс)
         long delay = 300;
         for (View v : viewsToAnimate) {
             v.animate()
@@ -90,13 +99,15 @@ public class TutorialActivity extends AppCompatActivity {
                     .setDuration(600)
                     .setStartDelay(delay)
                     .start();
-            delay += 500; // Каждый следующий элемент выплывает на 500мс позже
+            delay += 500;
         }
 
+        // Запуск демонстрации SeekBar
         startInfiniteSlider();
 
+        // Кнопка перехода к приложению
         btnStart.setOnClickListener(v -> {
-            // Останавливаем бесконечный цикл перед уходом
+            // Остановка фонового процесса анимации
             if (loopHandler != null && sliderRunnable != null) {
                 loopHandler.removeCallbacks(sliderRunnable);
             }
@@ -104,12 +115,15 @@ public class TutorialActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Завершает туториал, сохраняет флаг прохождения и анимирует выход.
+     */
     private void finishTutorial() {
-        // Сохраняем флаг
+        // Помечаем, что туториал больше не нужно показывать при следующем запуске
         SharedPreferences prefs = getSharedPreferences("MindTypePrefs", MODE_PRIVATE);
         prefs.edit().putBoolean("isFirstRun", false).apply();
 
-        // Анимация исчезновения (в обратном порядке)
+        // Анимация разлета элементов перед закрытием
         View[] viewsToAnimate = {btnStart, tvSeekBarInstruction, sliderContainer, tvInstruction, tvDesc, tvTitle};
         long delay = 0;
 
@@ -123,7 +137,7 @@ public class TutorialActivity extends AppCompatActivity {
             delay += 100;
         }
 
-        // Запускаем переход после того, как последний элемент (заголовок) начнет исчезать
+        // Переход на экран логина после завершения анимации
         tvTitle.postDelayed(() -> {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);

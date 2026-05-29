@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,7 +16,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MindType">
+        android:theme="@style/Theme.MindType"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".result.WeeklyReportActivity"
+            android:exported="false" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
@@ -25,10 +34,10 @@
             android:name=".StartActivity"
             android:exported="false" />
         <activity
-            android:name=".ResultActivity"
+            android:name=".result.ResultActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".tests.MainActivity"
             android:exported="false" />
         <activity
             android:name=".SplashActivity"
@@ -39,14 +48,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="vahagn.zargaryan.mindtype.journal.JournalActivity" />
 
-        <receiver android:name=".MoodReceiver" android:exported="false">
+        <receiver
+            android:name=".alarm.MoodReceiver"
+            android:exported="true">
             <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="CHECK_MOOD" />
                 <action android:name="SHOW_REPORT" />
                 <action android:name="vahagn.zargaryan.mindtype.SAVE_MOOD" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".alarm.CooldownReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>
